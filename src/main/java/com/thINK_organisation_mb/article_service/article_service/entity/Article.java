@@ -24,7 +24,7 @@ public class Article{
     private UUID uid;  // User ID of the author
 
     @Lob
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content; // Storing dynamic HTML content
 
     @ManyToOne
