@@ -34,6 +34,6 @@ public class Article{
     @Column(name = "member_only", nullable = false)
     private boolean memberOnly;  // Boolean flag for premium content
 
-    @Column(name = "rt_estimate", nullable = false)
+    @Column(name = "read_time_estimate", nullable = false)
     private int readTimeEstimate;  // Estimated read time
 }
