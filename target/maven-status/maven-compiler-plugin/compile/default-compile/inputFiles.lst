@@ -1,0 +1,9 @@
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/ArticleServiceApplication.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/controller/ArticleController.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/entity/Article.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/entity/Bookmark.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/entity/Topic.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/repository/ArticleRepository.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/repository/BookmarkRepository.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/repository/TopicRepository.java
+/home/vipul/IdeaProjects/Article-Service/src/main/java/com/thINK_organisation_mb/article_service/article_service/service/ArticleService.java
