@@ -4,6 +4,7 @@ com/thINK_organisation_mb/article_service/article_service/entity/Article.class
 com/thINK_organisation_mb/article_service/article_service/entity/Article$ArticleBuilder.class
 com/thINK_organisation_mb/article_service/article_service/entity/Topic$TopicBuilder.class
 com/thINK_organisation_mb/article_service/article_service/entity/Topic.class
+com/thINK_organisation_mb/article_service/article_service/config/SecurityConfig.class
 com/thINK_organisation_mb/article_service/article_service/ArticleServiceApplication.class
 com/thINK_organisation_mb/article_service/article_service/service/ArticleService.class
 com/thINK_organisation_mb/article_service/article_service/entity/Bookmark$BookmarkBuilder.class
