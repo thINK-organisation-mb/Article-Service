@@ -1,5 +1,6 @@
 package com.thINK_organisation_mb.article_service.article_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class Article{
 
     @ManyToOne
     @JoinColumn(name = "topic_id", nullable = false)
+    @JsonBackReference  // Prevents serialization of this side of the relationship
     private Topic topic;  // Relationship with Topic entity
 
     @Column(name = "member_only", nullable = false)
