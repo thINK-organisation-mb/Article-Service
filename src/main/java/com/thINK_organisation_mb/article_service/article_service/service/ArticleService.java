@@ -4,7 +4,6 @@ import com.thINK_organisation_mb.article_service.article_service.entity.Article;
 import com.thINK_organisation_mb.article_service.article_service.entity.Topic;
 import com.thINK_organisation_mb.article_service.article_service.repository.ArticleRepository;
 import com.thINK_organisation_mb.article_service.article_service.repository.TopicRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +13,14 @@ import java.util.UUID;
 @Service
 public class ArticleService {
 
-    @Autowired
-    private ArticleRepository articleRepository;
+    private final ArticleRepository articleRepository;
+    private final TopicRepository topicRepository;
 
-    @Autowired
-    private TopicRepository topicRepository;
+    // Constructor injection
+    public ArticleService(ArticleRepository articleRepository, TopicRepository topicRepository) {
+        this.articleRepository = articleRepository;
+        this.topicRepository = topicRepository;
+    }
 
     public Article createArticle(Article article) {
         // Check if the topic already exists

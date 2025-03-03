@@ -1,5 +1,7 @@
 package com.thINK_organisation_mb.article_service.article_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +25,8 @@ public class Topic {
     private String topicName;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore  // Prevent serialization issue
+    @JsonIgnoreProperties("topic")
     @JsonManagedReference  // Allows serialization of this side of the relationship
     private List<Article> articles;
 }

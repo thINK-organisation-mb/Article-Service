@@ -1,6 +1,7 @@
 package com.thINK_organisation_mb.article_service.article_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +26,8 @@ public class Article{
     private UUID uid;  // User ID of the author
 
     @Lob
-    @Column(name = "content", columnDefinition = "LONGTEXT")
+    @JsonIgnore // Add this annotation
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content; // Storing dynamic HTML content
 
     @ManyToOne

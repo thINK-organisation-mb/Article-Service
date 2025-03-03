@@ -9,15 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {
 
+    private final ArticleService articleService;
+
+    // Constructor injection
     @Autowired
-    private ArticleService articleService;
+    public ArticleController(ArticleService articleService) {
+        this.articleService = articleService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
