@@ -36,6 +36,20 @@ public class ArticleController {
     }
 
     @Transactional
+    @PutMapping("/{id}")
+    public Article editArticle(@PathVariable UUID id, @RequestBody Article article) {
+        return articleService.editArticle(id, article);
+    }
+
+    @Transactional
+    @PutMapping("/{id}/publish")
+    public Article publishArticle(@PathVariable UUID id) {
+        return articleService.publishArticle(id);
+    }
+
+
+
+    @Transactional
     @GetMapping("/user/{uid}")
     public List<Article> getArticlesByUser(@PathVariable UUID uid) {
         return articleService.getArticlesByUser(uid);
@@ -58,5 +72,20 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteArticle(@PathVariable UUID id) {
         articleService.deleteArticle(id);
+    }
+
+    @Transactional
+    @GetMapping("/search")
+    public List<Article> searchArticles(@RequestParam String query) {
+        return articleService.searchArticles(query);
+    }
+
+    @Transactional
+    @GetMapping("/filter")
+    public List<Article> filterArticles(@RequestParam(required = false) Boolean published,
+                                        @RequestParam(required = false) String topic,
+                                        @RequestParam(required = false) Integer minReadTime,
+                                        @RequestParam(required = false) Integer maxReadTime) {
+        return articleService.filterArticles(published, topic, minReadTime, maxReadTime);
     }
 }

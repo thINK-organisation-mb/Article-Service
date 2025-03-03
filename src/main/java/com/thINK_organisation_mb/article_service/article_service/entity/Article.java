@@ -26,6 +26,7 @@ public class Article{
     private UUID uid;  // User ID of the author
 
     @Lob
+    @Basic(fetch = FetchType.LAZY) // Fetch content lazily
     @JsonIgnore // Add this annotation
     @Column(name = "content", columnDefinition = "TEXT")
     private String content; // Storing dynamic HTML content
@@ -40,4 +41,7 @@ public class Article{
 
     @Column(name = "read_time_estimate", nullable = false)
     private int readTimeEstimate;  // Estimated read time
+
+    @Column(name = "published", nullable = false)
+    private boolean published;  // Boolean flag to indicate if the article is published
 }
