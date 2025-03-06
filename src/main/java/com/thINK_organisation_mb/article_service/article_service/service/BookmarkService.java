@@ -15,7 +15,7 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
 
-    // Bookmark an article
+
     @Transactional
     public Bookmark bookmarkArticle(UUID userId, UUID articleId) {
         Bookmark bookmark = Bookmark.builder()
@@ -25,13 +25,13 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
-    // Get all bookmarks for a user
+
     @Transactional
     public List<Bookmark> getBookmarksByUser(UUID userId) {
         return bookmarkRepository.findByUserId(userId);
     }
 
-    // Remove a bookmark
+
     @Transactional
     public void removeBookmark(UUID userId, UUID articleId) {
         bookmarkRepository.deleteByUserIdAndArticle_Aid(userId, articleId);

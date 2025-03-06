@@ -18,11 +18,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/public/**").permitAll() // Allow public URLs
-                        .anyRequest().authenticated() // Secure all other requests
+                        .requestMatchers("/login", "/public/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()) // Enable Basic Auth
-                .csrf(csrf -> csrf.disable()); // Disable CSRF for APIs
+                .httpBasic(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable());
         return http.build();
     }
 

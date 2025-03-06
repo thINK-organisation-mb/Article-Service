@@ -13,13 +13,12 @@ public class TopicService {
 
     private final TopicRepository topicRepository;
 
-    // Constructor injection
+
     @Autowired
     public TopicService(TopicRepository topicRepository) {
         this.topicRepository = topicRepository;
     }
 
-    // Create a new topic
     public Topic createTopic(Topic topic) {
         Optional<Topic> existingTopic = topicRepository.findByTopicName(topic.getTopicName());
         if (existingTopic.isPresent()) {
@@ -28,17 +27,15 @@ public class TopicService {
         return topicRepository.save(topic);
     }
 
-    // Get all topics
+
     public List<Topic> getAllTopics() {
         return topicRepository.findAll();
     }
 
-    // Get a topic by ID
     public Optional<Topic> getTopicById(Integer topicId) {
         return topicRepository.findById(topicId);
     }
 
-    // Delete a topic by ID
     public void deleteTopic(Integer topicId) {
         topicRepository.deleteById(topicId);
     }

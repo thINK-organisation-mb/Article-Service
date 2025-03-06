@@ -17,31 +17,31 @@ import java.util.UUID;
 public class Article{
     @Id
     @GeneratedValue
-    private UUID aid;  // Article ID
+    private UUID aid;
 
     @Column(name = "articlename", nullable = false, length = 255)
     private String articleName;
 
     @Column(name = "uid", nullable = false)
-    private UUID uid;  // User ID of the author
+    private UUID uid;
 
     @Lob
-    @Basic(fetch = FetchType.LAZY) // Fetch content lazily
-    @JsonIgnore // Add this annotation
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
     @Column(name = "content", columnDefinition = "TEXT")
-    private String content; // Storing dynamic HTML content
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "topic_id", nullable = false)
-    @JsonBackReference  // Prevents serialization of this side of the relationship
-    private Topic topic;  // Relationship with Topic entity
+    @JsonBackReference
+    private Topic topic;
 
     @Column(name = "member_only", nullable = false)
-    private boolean memberOnly;  // Boolean flag for premium content
+    private boolean memberOnly;
 
     @Column(name = "read_time_estimate", nullable = false)
-    private int readTimeEstimate;  // Estimated read time
+    private int readTimeEstimate;
 
     @Column(name = "published", nullable = false)
-    private boolean published;  // Boolean flag to indicate if the article is published
+    private boolean published;
 }

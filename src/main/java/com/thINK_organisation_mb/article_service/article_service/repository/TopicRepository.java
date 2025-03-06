@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Integer> {
-    // Find a topic by its name
+
     Optional<Topic> findByTopicName(String topicName);
 }

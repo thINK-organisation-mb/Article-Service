@@ -11,15 +11,13 @@ import java.util.UUID;
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, UUID> {
 
-    // Find all bookmarks by a specific user
+
     @Query("SELECT b FROM Bookmark b JOIN FETCH b.article a WHERE b.userId = :userId")
     List<Bookmark> findByUserId(UUID userId);
 
-    // Find a specific bookmark by user ID and article ID
+
     @Query("SELECT b FROM Bookmark b JOIN FETCH b.article a WHERE b.userId = :userId AND a.aid = :articleId")
     Bookmark findByUserIdAndArticle_Aid(UUID userId, UUID articleId); // Use "Article_Aid" to reference the article's ID
-
-    // Delete a bookmark by user ID and article ID
 
     void deleteByUserIdAndArticle_Aid(UUID userId, UUID articleId); // Use "Article_Aid" to reference the article's ID
 }

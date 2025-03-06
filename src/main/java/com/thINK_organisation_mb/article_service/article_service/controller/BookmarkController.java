@@ -16,7 +16,6 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    // Bookmark an article
     @PostMapping("/{articleId}/bookmark")
     public ResponseEntity<Bookmark> bookmarkArticle(
             @PathVariable UUID articleId,
@@ -25,14 +24,12 @@ public class BookmarkController {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookmark);
     }
 
-    // Get all bookmarks for a user
     @GetMapping("/users/{userId}/bookmarks")
     public ResponseEntity<List<Bookmark>> getBookmarksByUser(@PathVariable UUID userId) {
         List<Bookmark> bookmarks = bookmarkService.getBookmarksByUser(userId);
         return ResponseEntity.ok(bookmarks);
     }
 
-    // Remove a bookmark
     @DeleteMapping("/{articleId}/bookmark")
     public ResponseEntity<Void> removeBookmark(
             @PathVariable UUID articleId,

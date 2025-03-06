@@ -25,8 +25,8 @@ public class Topic {
     private String topicName;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore  // Prevent serialization issue
+    @JsonIgnore
     @JsonIgnoreProperties("topic")
-    @JsonManagedReference  // Allows serialization of this side of the relationship
+    @JsonManagedReference
     private List<Article> articles;
 }

@@ -14,33 +14,28 @@ public class TopicController {
 
     private final TopicService topicService;
 
-    // Constructor injection
     @Autowired
     public TopicController(TopicService topicService) {
         this.topicService = topicService;
     }
 
-    // Create a new topic
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Topic createTopic(@RequestBody Topic topic) {
         return topicService.createTopic(topic);
     }
 
-    // Get all topics
     @GetMapping
     public List<Topic> getAllTopics() {
         return topicService.getAllTopics();
     }
 
-    // Get a single topic by ID
     @GetMapping("/{topicId}")
     public Topic getTopicById(@PathVariable Integer topicId) {
         return topicService.getTopicById(topicId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Topic not found"));
     }
 
-    // Delete a topic by ID
     @DeleteMapping("/{topicId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTopic(@PathVariable Integer topicId) {

@@ -19,17 +19,17 @@ public class Bookmark {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private UUID userId;  // ID of the user who bookmarked
+    private UUID userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", referencedColumnName = "aid", nullable = false) // Explicitly map to "aid"
-    private Article article;  // The bookmarked article
+    private Article article;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;  // Timestamp for when the bookmark was created
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now(); // Automatically set the creation timestamp
+        this.createdAt = LocalDateTime.now();
     }
 }
