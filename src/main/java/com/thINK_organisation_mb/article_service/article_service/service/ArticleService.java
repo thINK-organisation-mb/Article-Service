@@ -1,11 +1,17 @@
 package com.thINK_organisation_mb.article_service.article_service.service;
 
+import com.thINK_organisation_mb.article_service.article_service.client.ReactionClient;
+import com.thINK_organisation_mb.article_service.article_service.client.UserClient;
+import com.thINK_organisation_mb.article_service.article_service.dto.ArticleMainDTO;
+import com.thINK_organisation_mb.article_service.article_service.dto.ArticleUserDTO;
+import com.thINK_organisation_mb.article_service.article_service.dto.ReactionDTO;
 import com.thINK_organisation_mb.article_service.article_service.entity.Article;
-import com.thINK_organisation_mb.article_service.article_service.entity.Topic;
+import com.thINK_organisation_mb.article_service.article_service.entity.Bookmark;
 import com.thINK_organisation_mb.article_service.article_service.repository.ArticleRepository;
-import com.thINK_organisation_mb.article_service.article_service.repository.TopicRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,30 +20,31 @@ import java.util.UUID;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final TopicRepository topicRepository;
+
+    @Autowired
+    private BookmarkService bookmarkService;
+
+    private ReactionClient reactionClient;
+
+    @Autowired
+    public void UserService(ReactionClient reactionClient) {
+        this.reactionClient = reactionClient;
+    }
+
+    private UserClient userClient;
+
+    @Autowired
+    public void UserService(UserClient userClient) {
+        this.userClient = userClient;
+    }
+
 
     // Constructor injection
-    public ArticleService(ArticleRepository articleRepository, TopicRepository topicRepository) {
+    public ArticleService(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
-        this.topicRepository = topicRepository;
     }
 
     public Article createArticle(Article article) {
-        // Check if the topic already exists
-        Topic topic = article.getTopic();
-        if (topic.getTopicId() == null) {
-            // If the topic is new, save it first
-            topic = topicRepository.save(topic);
-        } else {
-            // If the topic exists, fetch it from the database
-            topic = topicRepository.findById(topic.getTopicId())
-                    .orElseThrow(() -> new RuntimeException("Topic not found"));
-        }
-
-        // Set the managed topic back to the article
-        article.setTopic(topic);
-
-        // Save the article
         return articleRepository.save(article);
     }
 
@@ -45,23 +52,36 @@ public class ArticleService {
         return articleRepository.findById(id);
     }
 
-    public List<Article> getArticlesByUser(UUID uid) {
-        return articleRepository.findByUid(uid);
-    }
-
-    public List<Article> getArticlesByTopic(Long topicId) {
-        return articleRepository.findByTopic_TopicId(topicId);
+    public List<ArticleUserDTO> getArticlesByUser(UUID uid) {
+        List<Article> articles = articleRepository.findByUid(uid);
+        List<ArticleUserDTO> result = new ArrayList<>();
+        for(Article article : articles) {
+            ArticleUserDTO r = new ArticleUserDTO();
+            r.setAid(article.getAid());
+            r.setArticleName(article.getArticleName());
+            r.setPreview(article.getPreview());
+            r.setContent(article.getContent());
+            r.setTopic(article.getTopic());
+            r.setRt_estimate(article.getRt_estimate());
+            r.setUid(article.getUid());
+            r.setDate(article.getDate());
+            r.setAuthorName(userClient.getUser(article.getUid()).getBody().getUsername());
+            Bookmark bookmark = bookmarkService.getBookmark(uid, article.getAid());
+            if(bookmark == null) r.setIsBookmarked(false);
+            r.setIsBookmarked(true);
+            r.setAuthorEmail(article.getAuthorEmail());
+            r.setComments(reactionClient.getCommentsByArticleId(article.getAid()).size());
+            r.setLikes(reactionClient.getReactionsByArticleId(article.getAid()).size());
+            r.setIsLiked(reactionClient.getReactionByUserIdAndArticleId(uid, article.getAid()).getBody());
+            result.add(r);
+        }
+        return result;
     }
 
     public void deleteArticle(UUID id) {
         articleRepository.deleteById(id);
     }
 
-    public Article makeArticlePublic(UUID id) {
-        Article article = articleRepository.findById(id).orElseThrow();
-        article.setMemberOnly(false);
-        return articleRepository.save(article);
-    }
     // New method to edit an article
     public Article editArticle(UUID id, Article updatedArticle) {
         Article existingArticle = articleRepository.findById(id)
@@ -69,58 +89,112 @@ public class ArticleService {
 
         existingArticle.setArticleName(updatedArticle.getArticleName());
         existingArticle.setContent(updatedArticle.getContent());
-        existingArticle.setMemberOnly(updatedArticle.isMemberOnly());
-        existingArticle.setReadTimeEstimate(updatedArticle.getReadTimeEstimate());
-
-        final Topic updatedTopic = updatedArticle.getTopic(); // Declare as final
-        if (updatedTopic != null) {
-            if (updatedTopic.getTopicId() == null) {
-                Topic savedTopic = topicRepository.save(updatedTopic);
-                existingArticle.setTopic(savedTopic);
-            } else {
-                Topic fetchedTopic = topicRepository.findById(updatedTopic.getTopicId())
-                        .orElseThrow(() -> new RuntimeException("Topic not found with ID: " + updatedTopic.getTopicId()));
-                existingArticle.setTopic(fetchedTopic);
-            }
-        } else {
-            existingArticle.setTopic(existingArticle.getTopic());
-        }
+        existingArticle.setDate(updatedArticle.getDate());
+        existingArticle.setPreview(updatedArticle.getPreview());
+        existingArticle.setRt_estimate(updatedArticle.getRt_estimate());
+        existingArticle.setTopic(updatedArticle.getTopic());
 
         return articleRepository.save(existingArticle);
     }
 
-    // New method to publish an article
-    public Article publishArticle(UUID id) {
-        Article article = articleRepository.findById(id).orElseThrow();
-        // Assuming there is a field like `published` in the Article entity
-        // If not, you need to add it to the Article entity
-        article.setPublished(true);
-        return articleRepository.save(article);
-    }
-
-    // New method to search articles based on a query
-    public List<Article> searchArticles(String query) {
-        return articleRepository.findByArticleNameContainingIgnoreCaseOrContentContainingIgnoreCase(query);
-    }
-
-    // New method to filter articles based on various criteria
-    public List<Article> filterArticles(Boolean published, String topic, Integer minReadTime, Integer maxReadTime) {
-        if (published != null && topic != null && minReadTime != null && maxReadTime != null) {
-            return articleRepository.findByPublishedAndTopic_TopicNameContainingIgnoreCaseAndReadTimeEstimateBetween(published, topic, minReadTime, maxReadTime);
-        } else if (published != null && topic != null) {
-            return articleRepository.findByPublishedAndTopic_TopicNameContainingIgnoreCase(published, topic);
-        } else if (published != null && minReadTime != null && maxReadTime != null) {
-            return articleRepository.findByPublishedAndReadTimeEstimateBetween(published, minReadTime, maxReadTime);
-        } else if (topic != null && minReadTime != null && maxReadTime != null) {
-            return articleRepository.findByTopic_TopicNameContainingIgnoreCaseAndReadTimeEstimateBetween(topic, minReadTime, maxReadTime);
-        } else if (published != null) {
-            return articleRepository.findByPublished(published);
-        } else if (topic != null) {
-            return articleRepository.findByTopic_TopicNameContainingIgnoreCase(topic);
-        } else if (minReadTime != null && maxReadTime != null) {
-            return articleRepository.findByReadTimeEstimateBetween(minReadTime, maxReadTime);
-        } else {
-            return articleRepository.findAll();
+    public List<ArticleMainDTO> getArticles(){
+        List<Article> articles = articleRepository.findAll();
+        List<ArticleMainDTO> result = new ArrayList<>();
+        for(Article article : articles){
+            ArticleMainDTO r = new ArticleMainDTO();
+            r.setAid(article.getAid());
+            r.setArticleName(article.getArticleName());
+            r.setPreview(article.getPreview());
+            r.setContent(article.getContent());
+            r.setTopic(article.getTopic());
+            r.setRt_estimate(article.getRt_estimate());
+            r.setUid(article.getUid());
+            r.setDate(article.getDate());
+            r.setAuthorName(userClient.getUser(article.getUid()).getBody().getUsername());
+            r.setAuthorEmail(article.getAuthorEmail());
+            r.setComments(reactionClient.getCommentsByArticleId(article.getAid()).size());
+            r.setLikes(reactionClient.getReactionsByArticleId(article.getAid()).size());
+            result.add(r);
         }
+        return result;
     }
+
+    public List<ArticleUserDTO> getArticleForUserFollowed(UUID userId){
+        List<Article> articles = articleRepository.findAll();
+        List<ArticleUserDTO> result = new ArrayList<>();
+        for(Article article : articles) {
+            if(Boolean.FALSE.equals(userClient.follows(userId, article.getUid()).getBody())) continue;
+            ArticleUserDTO r = new ArticleUserDTO();
+            r.setAid(article.getAid());
+            r.setArticleName(article.getArticleName());
+            r.setPreview(article.getPreview());
+            r.setContent(article.getContent());
+            r.setTopic(article.getTopic());
+            r.setRt_estimate(article.getRt_estimate());
+            r.setUid(article.getUid());
+            r.setDate(article.getDate());
+            r.setAuthorName(userClient.getUser(article.getUid()).getBody().getUsername());
+            Bookmark bookmark = bookmarkService.getBookmark(userId, article.getAid());
+            if(bookmark == null) r.setIsBookmarked(false);
+            r.setIsBookmarked(true);
+            r.setAuthorEmail(article.getAuthorEmail());
+            r.setComments(reactionClient.getCommentsByArticleId(article.getAid()).size());
+            r.setLikes(reactionClient.getReactionsByArticleId(article.getAid()).size());
+            r.setIsLiked(reactionClient.getReactionByUserIdAndArticleId(userId, article.getAid()).getBody());
+            result.add(r);
+        }
+        return result;
+    }
+
+    public List<ArticleUserDTO> getArticleForUserBookmarked(UUID userId){
+        List<Article> articles = articleRepository.findAll();
+        List<ArticleUserDTO> result = new ArrayList<>();
+        for(Article article : articles) {
+            ArticleUserDTO r = new ArticleUserDTO();
+            r.setAid(article.getAid());
+            r.setArticleName(article.getArticleName());
+            r.setPreview(article.getPreview());
+            r.setContent(article.getContent());
+            r.setTopic(article.getTopic());
+            r.setRt_estimate(article.getRt_estimate());
+            r.setUid(article.getUid());
+            r.setDate(article.getDate());
+            r.setAuthorName(userClient.getUser(article.getUid()).getBody().getUsername());
+            Bookmark bookmark = bookmarkService.getBookmark(userId, article.getAid());
+            if(bookmark == null) continue;
+            r.setIsBookmarked(true);
+            r.setAuthorEmail(article.getAuthorEmail());
+            r.setComments(reactionClient.getCommentsByArticleId(article.getAid()).size());
+            r.setLikes(reactionClient.getReactionsByArticleId(article.getAid()).size());
+            r.setIsLiked(reactionClient.getReactionByUserIdAndArticleId(userId, article.getAid()).getBody());
+            result.add(r);
+        }
+        return result;
+    }
+
+    public ArticleUserDTO getArticleForUser(UUID userId, UUID articleId){
+        Optional<Article> optionalArticle = articleRepository.findById(articleId);
+        if (!optionalArticle.isPresent()) {
+            return null;
+        }
+        Article article = optionalArticle.get();
+        ArticleUserDTO r = new ArticleUserDTO();
+        r.setAid(article.getAid());
+        r.setArticleName(article.getArticleName());
+        r.setPreview(article.getPreview());
+        r.setContent(article.getContent());
+        r.setTopic(article.getTopic());
+        r.setRt_estimate(article.getRt_estimate());
+        r.setUid(article.getUid());
+        r.setDate(article.getDate());
+        r.setAuthorName(userClient.getUser(article.getUid()).getBody().getUsername());
+        Bookmark bookmark = bookmarkService.getBookmark(userId, articleId);
+        r.setIsBookmarked(bookmark != null);
+        r.setAuthorEmail(article.getAuthorEmail());
+        r.setComments(reactionClient.getCommentsByArticleId(article.getAid()).size());
+        r.setLikes(reactionClient.getReactionsByArticleId(article.getAid()).size());
+        r.setIsLiked(reactionClient.getReactionByUserIdAndArticleId(userId, articleId).getBody());
+        return r;
+    }
+
 }

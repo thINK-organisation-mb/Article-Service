@@ -25,6 +25,12 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
+    @Transactional
+    public Bookmark getBookmark(UUID userId, UUID articleId) {
+        Bookmark bookmark = bookmarkRepository.findByUserIdAndArticle_Aid(userId, articleId);
+        return bookmark;
+    }
+
 
     @Transactional
     public List<Bookmark> getBookmarksByUser(UUID userId) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -25,23 +26,97 @@ public class Article{
     @Column(name = "uid", nullable = false)
     private UUID uid;
 
+    @Column(name = "author_email", nullable = false)
+    private String authorEmail;
+
+    @Column(name = "preview")
+    private String preview;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "topic_id", nullable = false)
-    @JsonBackReference
-    private Topic topic;
+    @Column(name = "topic", nullable = false)
+    private String topic;
 
-    @Column(name = "member_only", nullable = false)
-    private boolean memberOnly;
+    @Column(name = "rt_estimate", nullable = false)
+    private int rt_estimate;
 
-    @Column(name = "read_time_estimate", nullable = false)
-    private int readTimeEstimate;
+    @Column(name = "date", nullable = false)
+    private Date date;
 
-    @Column(name = "published", nullable = false)
-    private boolean published;
+    public UUID getAid() {
+        return aid;
+    }
+
+    public void setAid(UUID aid) {
+        this.aid = aid;
+    }
+
+    public String getArticleName() {
+        return articleName;
+    }
+
+    public void setArticleName(String articleName) {
+        this.articleName = articleName;
+    }
+
+    public UUID getUid() {
+        return uid;
+    }
+
+    public void setUid(UUID uid) {
+        this.uid = uid;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+
+    public String getPreview() {
+        return preview;
+    }
+
+    public void setPreview(String preview) {
+        this.preview = preview;
+    }
+
+    public int getRt_estimate() {
+        return rt_estimate;
+    }
+
+    public void setRt_estimate(int rt_estimate) {
+        this.rt_estimate = rt_estimate;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(String authorEmail) {
+        this.authorEmail = authorEmail;
+    }
 }

@@ -1,5 +1,8 @@
 package com.thINK_organisation_mb.article_service.article_service.controller;
 
+import com.thINK_organisation_mb.article_service.article_service.dto.ArticleDTO;
+import com.thINK_organisation_mb.article_service.article_service.dto.ArticleMainDTO;
+import com.thINK_organisation_mb.article_service.article_service.dto.ArticleUserDTO;
 import com.thINK_organisation_mb.article_service.article_service.entity.Article;
 import com.thINK_organisation_mb.article_service.article_service.service.ArticleService;
 import jakarta.transaction.Transactional;
@@ -13,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/articles")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -24,8 +28,37 @@ public class ArticleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Article createArticle(@RequestBody Article article) {
-        return articleService.createArticle(article);
+    public Article createArticle(@RequestBody ArticleDTO articleDTO) {
+        Article newArticle = new Article();
+        newArticle.setArticleName(articleDTO.getArticleName());
+        newArticle.setAuthorEmail(articleDTO.getAuthorEmail());
+        newArticle.setUid(articleDTO.getUid());
+        newArticle.setPreview(articleDTO.getPreview());
+        newArticle.setContent(articleDTO.getContent());
+        newArticle.setTopic(articleDTO.getTopic());
+        newArticle.setRt_estimate(articleDTO.getRt_estimate());
+        newArticle.setDate(articleDTO.getDate());
+        return articleService.createArticle(newArticle);
+    }
+
+    @GetMapping
+    public List<ArticleMainDTO> getArticles() {
+        return articleService.getArticles();
+    }
+
+    @GetMapping("user/{userId}/article/{articleId}")
+    public ArticleUserDTO getArticleForUser(@PathVariable UUID userId, @PathVariable UUID articleId){
+        return articleService.getArticleForUser(userId, articleId);
+    }
+
+    @GetMapping("user/{userId}/bookmark")
+    public List<ArticleUserDTO> getArticleForUserBookmarked(@PathVariable UUID userId){
+        return articleService.getArticleForUserBookmarked(userId);
+    }
+
+    @GetMapping("user/{userId}/followed")
+    public List<ArticleUserDTO> getArticleForUserFollowed(@PathVariable UUID userId){
+        return articleService.getArticleForUserFollowed(userId);
     }
 
     @GetMapping("/{id}")
@@ -41,29 +74,9 @@ public class ArticleController {
     }
 
     @Transactional
-    @PutMapping("/{id}/publish")
-    public Article publishArticle(@PathVariable UUID id) {
-        return articleService.publishArticle(id);
-    }
-
-
-
-    @Transactional
-    @GetMapping("/user/{uid}")
-    public List<Article> getArticlesByUser(@PathVariable UUID uid) {
-        return articleService.getArticlesByUser(uid);
-    }
-
-    @Transactional
-    @GetMapping("/topic/{topicId}")
-    public List<Article> getArticlesByTopic(@PathVariable Long topicId) {
-        return articleService.getArticlesByTopic(topicId);
-    }
-
-    @Transactional
-    @PutMapping("/{id}/make-public")
-    public Article makeArticlePublic(@PathVariable UUID id) {
-        return articleService.makeArticlePublic(id);
+    @GetMapping("/user/{userId}")
+    public List<ArticleUserDTO> getArticlesByUser(@PathVariable UUID userId) {
+        return articleService.getArticlesByUser(userId);
     }
 
     @Transactional
@@ -71,20 +84,5 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteArticle(@PathVariable UUID id) {
         articleService.deleteArticle(id);
-    }
-
-    @Transactional
-    @GetMapping("/search")
-    public List<Article> searchArticles(@RequestParam String query) {
-        return articleService.searchArticles(query);
-    }
-
-    @Transactional
-    @GetMapping("/filter")
-    public List<Article> filterArticles(@RequestParam(required = false) Boolean published,
-                                        @RequestParam(required = false) String topic,
-                                        @RequestParam(required = false) Integer minReadTime,
-                                        @RequestParam(required = false) Integer maxReadTime) {
-        return articleService.filterArticles(published, topic, minReadTime, maxReadTime);
     }
 }
